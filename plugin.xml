@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.kochava.sdk"
+    version="2.1.0">
+
+    <name>KochavaTracker</name>
+    <description>KochavaTracker plugin for Cordova</description>
+    <license>Commercial License - see LICENSE file</license>
+    <keywords>kochava</keywords>
+    <author>kochava</author>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <js-module src="www/KochavaTracker.js" name="KochavaTracker">
+        <clobbers target="KochavaTracker" />
+    </js-module>
+
+	<asset src="www/KochavaAttributionNotification.js" target="js/KochavaAttributionNotification.js" />
+
+	<!-- android -->
+    <platform name="android">
+	
+		<framework src="com.google.android.gms:play-services-location:10.0.1" />
+
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="KochavaTrackerPlugin">
+				<param name="android-package" value="com.kochava.sdk.KochavaTrackerPlugin" />			
+			</feature>
+		</config-file>
+		<config-file parent="/*" target="AndroidManifest.xml">
+			<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+			<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+			<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+		</config-file>
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<receiver android:name="com.kochava.base.ReferralReceiver" android:exported="true">
+				<intent-filter>
+					<action android:name="com.android.vending.INSTALL_REFERRER" />
+				</intent-filter>
+			</receiver>
+		</config-file>
+		<source-file src="src/android/libs/Tracker.jar" target-dir="libs" />
+		<source-file src="src/android/KochavaTrackerPlugin.java" target-dir="src/com/kochava/sdk" />
+	</platform>
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+			<feature name="KochavaTrackerPlugin">
+				<param name="ios-package" value="KochavaTrackerPlugin" />
+			</feature>
+        </config-file>
+
+		<header-file src="src/ios/KochavaTrackerPlugin.h" />
+		<source-file src="src/ios/KochavaTrackerPlugin.m" />
+
+        <header-file src="src/ios/KochavaSDK/KochavaTracker.h" />
+        <header-file src="src/ios/KochavaSDK/KochavaEvent.h" />
+        <source-file src="src/ios/KochavaSDK/libKochavaTrackeriOS.a" framework="true" />
+
+        <framework src="Foundation.framework" weak="true" />
+        <framework src="AVFoundation.framework" weak="true" />
+        <framework src="UIKit.framework" weak="true" />
+        <framework src="AdSupport.framework" weak="true" />
+        <framework src="iAd.framework" weak="true" />
+		<framework src="CoreLocation.framework" weak="true" />
+		<framework src="SystemConfiguration.framework" weak="true" />
+        <framework src="WebKit.framework" weak="true" />
+    </platform>
+</plugin>

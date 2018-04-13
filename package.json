@@ -1,0 +1,21 @@
+{
+    "version": "2.1.0",
+    "name": "com.kochava.cordova",
+    "cordova_name": "Kochava SDK Cordova Plugin",
+    "description": "Cordova plugin for the Kochava",
+    "license": "Commercial - see License file",
+    "platforms": [
+        "ios",
+        "android"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.0.0"
+        },
+        {
+            "name": "cordova-android",
+            "version": ">=3.1.0"
+        }
+    ]
+}
