@@ -7,35 +7,37 @@
 //  Description : This is the plugin class implementation file.
 //
 
-
-
 #pragma mark - IMPORT
-
-
 
 #import "KochavaTrackerPlugin.h"
 
-
-
 #pragma mark - CONST
-
-
 
 NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
 
-
-
 #pragma mark - IMPLEMENTATION
-
-
 
 @implementation KochavaTrackerPlugin
     
-    
-    
 #pragma mark - GENERAL
-    
-    
+
++ (void)invalidateKochava
+{
+    [KochavaTracker.shared performSelector:@selector(invalidate)];
+}
+
++ (void)removeKochavaUserDefaults
+{
+    NSArray *keyArray = NSUserDefaults.standardUserDefaults.dictionaryRepresentation.allKeys;
+    for (id key in keyArray)
+    {
+        NSRange kochavaPrefixRange = [key rangeOfString:@"com.kochava"];
+        if ( kochavaPrefixRange.location != NSNotFound )
+        {
+            [NSUserDefaults.standardUserDefaults removeObjectForKey:key];
+        }
+    }
+}
     
 - (void)evaluateWindowAttributionNotificationCallbackWithParameterString:(nonnull NSString *)parameterString
 {
@@ -55,8 +57,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     }
 }
 
-
-
 - (void)sendEventString:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // nameString
@@ -74,8 +74,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     // self.commandDelegate
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
-    
-    
     
 - (void)sendEventMapObject:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
@@ -95,8 +93,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
 
-
-
 - (void)sendEventAppleAppStoreReceipt:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // nameString
@@ -110,11 +106,8 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     
     // event
     KochavaEvent *event = [KochavaEvent eventWithEventTypeEnum:KochavaEventTypeEnumCustom];
-    
     event.customEventNameString = nameString;
-    
     event.infoDictionary = infoDictionary;
-    
     event.appStoreReceiptBase64EncodedString = appStoreReceiptBase64EncodedString;
     
     // KochavaTracker.shared
@@ -127,14 +120,10 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
     
-    
-    
 - (void)sendEventGooglePlayReceipt:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     NSLog(@"KOCHAVA - sendEventWithGooglePlayReceiptButton does not apply to this OS");
 }
-    
-    
     
 - (void)sendDeepLink:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
@@ -143,9 +132,8 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     
     // deeplinkURL
     NSURL *deeplinkURL = [NSURL URLWithString:[deepLinkURLString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-// The following line would work, but may not be entirely equivalent.  The best solution will be to offer a urlString (in addition to url) on the standard parameters.
-//    NSURL *deeplinkURL = [NSURL URLWithString:[deepLinkURLString stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet]];
-    
+    // The following line would work, but may not be entirely equivalent.  The best solution will be to offer a urlString (in addition to url) on the standard parameters.
+    // NSURL *deeplinkURL = [NSURL URLWithString:[deepLinkURLString stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet]];
     
     // sourceApplicationString
     NSString *sourceApplicationString = (NSString *)[invokedUrlCommand.arguments objectAtIndex:1];
@@ -159,8 +147,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     // self.commandDelegate
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
-    
-    
     
 - (void)setAppLimitAdTracking:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
@@ -177,9 +163,7 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
     
-    
-    
-- (void)sendIdentityLink:(CDVInvokedUrlCommand *)invokedUrlCommand
+- (void)setIdentityLink:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // dictionaryObject
     id dictionaryObject = [invokedUrlCommand.arguments objectAtIndex:0];
@@ -203,7 +187,7 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
         [KochavaTracker.shared sendIdentityLinkWithDictionary:dictionary];
 
         // resultMessageString
-        resultMessageString = @"sendIdentityLinkWithDictionary did succeed";
+        resultMessageString = @"setIdentityLinkWithDictionary did succeed";
         
         // resultCommandStatus
         resultCommandStatus = CDVCommandStatus_OK;
@@ -211,7 +195,7 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     else
     {
         // resultMessageString
-        resultMessageString = @"sendIdentityLinkWithDictionary not processed";
+        resultMessageString = @"setIdentityLinkWithDictionary not processed";
         
         // resultCommandStatus
         resultCommandStatus = CDVCommandStatus_ERROR;
@@ -223,8 +207,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     // self.commandDelegate
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
-
-
 
 - (void)getAttribution:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
@@ -242,7 +224,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     {
         // attributionDictionaryJSONData and error
         NSError *error = nil;
-        
         NSData *attributionDictionaryJSONData = [NSJSONSerialization dataWithJSONObject:attributionDictionary options:0 error:&error];
         
         // attributionDictionaryJSONString
@@ -271,12 +252,14 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
     
-    
-    
 - (void)getDeviceId:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // deviceIdString
     NSString *deviceIdString = KochavaTracker.shared.deviceIdString;
+    if(deviceIdString == nil)
+    {
+        deviceIdString = @"";
+    }
     
     // pluginResult
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:deviceIdString];
@@ -285,12 +268,14 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
 
-
-
 - (void)getVersion:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // sdkVersionString
     NSString *sdkVersionString = KochavaTracker.shared.sdkVersionString;
+    if(sdkVersionString == nil)
+    {
+        sdkVersionString = @"";
+    }
     
     // pluginResult
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:sdkVersionString];
@@ -298,8 +283,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     // self.commandDelegate
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
-
-
 
 - (void)addPushToken:(nullable CDVInvokedUrlCommand *)invokedUrlCommand
 {
@@ -319,8 +302,6 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
 
-
-
 - (void)removePushToken:(nullable CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // remoteNotificationsDeviceTokenString
@@ -339,19 +320,74 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
 }
 
+- (void)setConsentGranted:(nullable CDVInvokedUrlCommand *)invokedUrlCommand
+{
+    id consentGrantedObject = [invokedUrlCommand.arguments objectAtIndex:0];
+    
+    NSNumber *consentGranted = nil;
+    
+    if ( [consentGrantedObject isKindOfClass:[NSNumber class]] )
+    {
+        consentGranted = (NSNumber *)consentGrantedObject;
+    }
 
+    if(consentGranted != nil)
+    {
+        [KochavaTracker.shared.consent didPromptWithDidGrantBoolNumber:consentGranted];
+    }
+
+    // pluginResult
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"setConsentGranted did succeed"];
+
+    // self.commandDelegate
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
+}
+
+- (void)setConsentPrompted:(nullable CDVInvokedUrlCommand *)invokedUrlCommand
+{
+    [KochavaTracker.shared.consent willPrompt];
+
+    // pluginResult
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"setConsentPrompted did succeed"];
+
+    // self.commandDelegate
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
+}
+
+- (void)getConsentStatus:(nullable CDVInvokedUrlCommand *)invokedUrlCommand
+{
+    NSString *consentStatusString = nil;
+    
+    NSObject *consentAsForContextObject = [KochavaTracker.shared.consent asForContextObjectWithContext:KVAContext.sdkWrapper];
+
+    if (consentAsForContextObject != nil)
+    {
+        NSError *error = nil;
+        NSData *consentStatusJSONData = [NSJSONSerialization dataWithJSONObject:consentAsForContextObject options:0 error:&error];
+        
+        if (consentStatusJSONData != nil)
+        {
+            consentStatusString = [[NSString alloc] initWithData:consentStatusJSONData encoding:NSUTF8StringEncoding];
+        }
+    }
+    
+    if(consentStatusString == nil)
+    {
+        consentStatusString = @"{}";
+    }
+
+    // pluginResult
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:consentStatusString];
+
+    // self.commandDelegate
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:invokedUrlCommand.callbackId];
+}
 
 #pragma mark - LIFECYCLE
-    
-    
     
 - (void)configure:(CDVInvokedUrlCommand *)invokedUrlCommand
 {
     // Discussion:  Configures the shared tracker.
-
-    // Note: The following code is not currently used anymore, but may be used to run a command in the background.  It is being saved in case we should ever want to put this into service again:
-    // [self.commandDelegate runInBackground:^{
-    // }];
 
     // receivedParametersDictionaryObject
     id receivedParametersDictionaryObject = nil;
@@ -373,9 +409,24 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     if (receivedParametersDictionary == nil)
     {
         NSLog(@"KochavaTrackerPlugin.configure parameter 0 is not an NSDictionary.  iOS native cannot initialize.");
-        
         return;
     }
+
+    // Check for the existence of the hidden unconfigure key.
+    if ([receivedParametersDictionary objectForKey:@"INTERNAL_UNCONFIGURE"]) {
+        NSLog(@"KochavaTrackerPlugin.configure UnConfigure.");
+        [KochavaTrackerPlugin invalidateKochava];
+        return;
+    }
+
+    // Check for the existence of the hidden reset key.
+    if ([receivedParametersDictionary objectForKey:@"INTERNAL_RESET"]) {
+        NSLog(@"KochavaTrackerPlugin.configure Reset.");
+        [KochavaTrackerPlugin removeKochavaUserDefaults];
+        return;
+    }
+
+    NSLog(@"KochavaTrackerPlugin.configure.");
     
     // PARSE SPECIFIC PARAMETERS FROM RECEIVEDPARAMETERSDICTIONARY
     // appGUIDStringObject
@@ -392,25 +443,49 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
         
         trackerParametersDictionary[KVA_PARAM_IOS_APP_GUID_STRING_KEY] = nil;
     }
-    
+
     // kochavaTracker
     // this cannot be run in background or will crash trying to collect user agent
     [KochavaTracker.shared configureWithParametersDictionary:trackerParametersDictionary delegate:self];
+
+    //Check if intelligent consent management is on and apply as necessary.
+    BOOL intelligentManagementBool = [[receivedParametersDictionary objectForKey:@"consentIntelligentManagement"] boolValue];
+    if(intelligentManagementBool) {
+        KochavaTracker.shared.consent.didUpdateBlock = ^(KVAConsent * _Nonnull consent)
+        {
+            // javaScriptString
+            NSString *javaScriptString = [NSString stringWithFormat:@"window.consentStatusChangeNotification.notificationCallback('');"];
+            
+            // webView
+            if ([self.webView isKindOfClass:[UIWebView class]])
+            {
+                UIWebView *webView = (UIWebView*)self.webView;
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    [webView stringByEvaluatingJavaScriptFromString:javaScriptString];
+                    
+                });
+            }
+        };
+    }
+    
 }
-    
-    
     
 #pragma mark - DELEGATE CALLBACKS
 #pragma mark KochavaTrackerDelegate
-    
-    
-    
+     
 - (void)tracker:(nonnull KochavaTracker *)tracker didRetrieveAttributionDictionary:(nonnull NSDictionary *)attributionDictionary
 {
-    // attributionDictionaryJSONData and error
+        // attributionDictionaryJSONData and error
     NSError *error = nil;
     
     NSData *attributionDictionaryJSONData = [NSJSONSerialization dataWithJSONObject:attributionDictionary options:0 error:&error];
+    
+    if (error != nil)
+    {
+        NSLog(@"error: %@", error);
+    }
     
     // attributionDictionaryJSONString
     NSString *attributionDictionaryJSONString = nil;
@@ -420,30 +495,36 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
         attributionDictionaryJSONString = [[NSString alloc] initWithData:attributionDictionaryJSONData encoding:NSUTF8StringEncoding];
     }
     
-    // windowAttributionNotificationCallbackParameterString
-    NSString *windowAttributionNotificationCallbackParameterString = nil;
+    // resolvedAttributionDictionaryJSONString
+    NSString *resolvedAttributionDictionaryJSONString = nil;
     
     if (attributionDictionaryJSONString != nil)
     {
-        windowAttributionNotificationCallbackParameterString = attributionDictionaryJSONString;
+        resolvedAttributionDictionaryJSONString = attributionDictionaryJSONString;
     }
     else
     {
-        windowAttributionNotificationCallbackParameterString = @"{ \"messageString\": \"the information cannot be serialized into a json string\" }";
+        resolvedAttributionDictionaryJSONString = @"{ \"messageString\": \"the information cannot be serialized into a json string\" }";
     }
-
-    // evaluateWindowAttributionNotificationCallbackWithParameterString
-    if (windowAttributionNotificationCallbackParameterString != nil)
+    // resolvedAttributionDictionaryJSONStringData
+    NSData *resolvedAttributionDictionaryJSONStringData = [resolvedAttributionDictionaryJSONString dataUsingEncoding:NSUTF8StringEncoding];
+    
+    // resolvedAttributionDictionaryJSONStringDataBase64EncodedString
+    NSString *resolvedAttributionDictionaryJSONStringDataBase64EncodedString = nil;
+    
+    if (resolvedAttributionDictionaryJSONStringData != nil)
     {
-        [self evaluateWindowAttributionNotificationCallbackWithParameterString:windowAttributionNotificationCallbackParameterString];
+        resolvedAttributionDictionaryJSONStringDataBase64EncodedString = [resolvedAttributionDictionaryJSONStringData base64EncodedStringWithOptions:0];
+    }
+    
+    // evaluateWindowAttributionNotificationCallbackWithParameterString
+    if (resolvedAttributionDictionaryJSONStringDataBase64EncodedString != nil)
+    {
+        [self evaluateWindowAttributionNotificationCallbackWithParameterString:resolvedAttributionDictionaryJSONStringDataBase64EncodedString];
     }
 }
 
-
-
 #pragma mark - CLASS METHODS
-
-
 
 +(id)dataWithHexString:(NSString *)hex
 {
@@ -463,9 +544,4 @@ NSString *const KVA_PARAM_IOS_APP_GUID_STRING_KEY = @"iOSAppGUIDString";
     return [NSData dataWithBytesNoCopy:bytes length:hex.length/2 freeWhenDone:YES];
 }
 
-
-
 @end
-
-
-

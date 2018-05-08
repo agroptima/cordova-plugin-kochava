@@ -1,5 +1,5 @@
 {
-    "version": "2.1.0",
+    "version": "2.2.0",
     "name": "com.kochava.cordova",
     "cordova_name": "Kochava SDK Cordova Plugin",
     "description": "Cordova plugin for the Kochava",
